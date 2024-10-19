@@ -1,0 +1,290 @@
+type AccessListEntry = record { storageKeys : vec text; address : text };
+type Block = record {
+  miner : text;
+  totalDifficulty : opt nat;
+  receiptsRoot : text;
+  stateRoot : text;
+  hash : text;
+  difficulty : opt nat;
+  size : nat;
+  uncles : vec text;
+  baseFeePerGas : opt nat;
+  extraData : text;
+  transactionsRoot : opt text;
+  sha3Uncles : text;
+  nonce : nat;
+  number : nat;
+  timestamp : nat;
+  transactions : vec text;
+  gasLimit : nat;
+  logsBloom : text;
+  parentHash : text;
+  gasUsed : nat;
+  mixHash : text;
+};
+type BlockTag = variant {
+  Earliest;
+  Safe;
+  Finalized;
+  Latest;
+  Number : nat;
+  Pending;
+};
+type CallArgs = record {
+  transaction : TransactionRequest;
+  block : opt BlockTag;
+};
+type CallResult = variant { Ok : text; Err : RpcError };
+type ChainId = nat64;
+type ConsensusStrategy = variant {
+  Equality;
+  Threshold : record { min : nat8; total : opt nat8 };
+};
+type EthMainnetService = variant {
+  Alchemy;
+  Llama;
+  BlockPi;
+  Cloudflare;
+  PublicNode;
+  Ankr;
+};
+type EthSepoliaService = variant {
+  Alchemy;
+  BlockPi;
+  PublicNode;
+  Ankr;
+  Sepolia;
+};
+type FeeHistory = record {
+  reward : vec vec nat;
+  gasUsedRatio : vec float64;
+  oldestBlock : nat;
+  baseFeePerGas : vec nat;
+};
+type FeeHistoryArgs = record {
+  blockCount : nat;
+  newestBlock : BlockTag;
+  rewardPercentiles : opt blob;
+};
+type FeeHistoryResult = variant { Ok : FeeHistory; Err : RpcError };
+type GetBlockByNumberResult = variant { Ok : Block; Err : RpcError };
+type GetLogsArgs = record {
+  fromBlock : opt BlockTag;
+  toBlock : opt BlockTag;
+  addresses : vec text;
+  topics : opt vec Topic;
+};
+type GetLogsResult = variant { Ok : vec LogEntry; Err : RpcError };
+type GetTransactionCountArgs = record { address : text; block : BlockTag };
+type GetTransactionCountResult = variant { Ok : nat; Err : RpcError };
+type GetTransactionReceiptResult = variant {
+  Ok : opt TransactionReceipt;
+  Err : RpcError;
+};
+type HttpHeader = record { value : text; name : text };
+type HttpOutcallError = variant {
+  IcError : record { code : RejectionCode; message : text };
+  InvalidHttpJsonRpcResponse : record {
+    status : nat16;
+    body : text;
+    parsingError : opt text;
+  };
+};
+type InstallArgs = record {
+  logFilter : opt LogFilter;
+  demo : opt bool;
+  manageApiKeys : opt vec principal;
+};
+type JsonRpcError = record { code : int64; message : text };
+type L2MainnetService = variant { Alchemy; Llama; BlockPi; PublicNode; Ankr };
+type LogEntry = record {
+  transactionHash : opt text;
+  blockNumber : opt nat;
+  data : text;
+  blockHash : opt text;
+  transactionIndex : opt nat;
+  topics : vec text;
+  address : text;
+  logIndex : opt nat;
+  removed : bool;
+};
+type LogFilter = variant {
+  ShowAll;
+  HideAll;
+  ShowPattern : Regex;
+  HidePattern : Regex;
+};
+type Metrics = record {
+  cyclesWithdrawn : nat;
+  responses : vec record { record { text; text; text }; nat64 };
+  errNoPermission : nat64;
+  inconsistentResponses : vec record { record { text; text }; nat64 };
+  cyclesCharged : vec record { record { text; text }; nat };
+  requests : vec record { record { text; text }; nat64 };
+  errHttpOutcall : vec record { record { text; text }; nat64 };
+  errHostNotAllowed : vec record { text; nat64 };
+};
+type MultiCallResult = variant {
+  Consistent : CallResult;
+  Inconsistent : vec record { RpcService; CallResult };
+};
+type MultiFeeHistoryResult = variant {
+  Consistent : FeeHistoryResult;
+  Inconsistent : vec record { RpcService; FeeHistoryResult };
+};
+type MultiGetBlockByNumberResult = variant {
+  Consistent : GetBlockByNumberResult;
+  Inconsistent : vec record { RpcService; GetBlockByNumberResult };
+};
+type MultiGetLogsResult = variant {
+  Consistent : GetLogsResult;
+  Inconsistent : vec record { RpcService; GetLogsResult };
+};
+type MultiGetTransactionCountResult = variant {
+  Consistent : GetTransactionCountResult;
+  Inconsistent : vec record { RpcService; GetTransactionCountResult };
+};
+type MultiGetTransactionReceiptResult = variant {
+  Consistent : GetTransactionReceiptResult;
+  Inconsistent : vec record { RpcService; GetTransactionReceiptResult };
+};
+type MultiSendRawTransactionResult = variant {
+  Consistent : SendRawTransactionResult;
+  Inconsistent : vec record { RpcService; SendRawTransactionResult };
+};
+type Provider = record {
+  access : RpcAccess;
+  alias : opt RpcService;
+  chainId : ChainId;
+  providerId : ProviderId;
+};
+type ProviderError = variant {
+  TooFewCycles : record { expected : nat; received : nat };
+  InvalidRpcConfig : text;
+  MissingRequiredProvider;
+  ProviderNotFound;
+  NoPermission;
+};
+type ProviderId = nat64;
+type Regex = text;
+type RejectionCode = variant {
+  NoError;
+  CanisterError;
+  SysTransient;
+  DestinationInvalid;
+  Unknown;
+  SysFatal;
+  CanisterReject;
+};
+type RequestCostResult = variant { Ok : nat; Err : RpcError };
+type RequestResult = variant { Ok : text; Err : RpcError };
+type RpcAccess = variant {
+  Authenticated : record { publicUrl : opt text; auth : RpcAuth };
+  Unauthenticated : record { publicUrl : text };
+};
+type RpcApi = record { url : text; headers : opt vec HttpHeader };
+type RpcAuth = variant {
+  BearerToken : record { url : text };
+  UrlParameter : record { urlPattern : text };
+};
+type RpcConfig = record {
+  responseConsensus : opt ConsensusStrategy;
+  responseSizeEstimate : opt nat64;
+};
+type RpcError = variant {
+  JsonRpcError : JsonRpcError;
+  ProviderError : ProviderError;
+  ValidationError : ValidationError;
+  HttpOutcallError : HttpOutcallError;
+};
+type RpcService = variant {
+  EthSepolia : EthSepoliaService;
+  BaseMainnet : L2MainnetService;
+  Custom : RpcApi;
+  OptimismMainnet : L2MainnetService;
+  ArbitrumOne : L2MainnetService;
+  EthMainnet : EthMainnetService;
+  Provider : ProviderId;
+};
+type RpcServices = variant {
+  EthSepolia : opt vec EthSepoliaService;
+  BaseMainnet : opt vec L2MainnetService;
+  Custom : record { chainId : ChainId; services : vec RpcApi };
+  OptimismMainnet : opt vec L2MainnetService;
+  ArbitrumOne : opt vec L2MainnetService;
+  EthMainnet : opt vec EthMainnetService;
+};
+type SendRawTransactionResult = variant {
+  Ok : SendRawTransactionStatus;
+  Err : RpcError;
+};
+type SendRawTransactionStatus = variant {
+  Ok : opt text;
+  NonceTooLow;
+  NonceTooHigh;
+  InsufficientFunds;
+};
+type Topic = vec text;
+type TransactionReceipt = record {
+  to : opt text;
+  status : opt nat;
+  transactionHash : text;
+  blockNumber : nat;
+  from : text;
+  logs : vec LogEntry;
+  blockHash : text;
+  "type" : text;
+  transactionIndex : nat;
+  effectiveGasPrice : nat;
+  logsBloom : text;
+  contractAddress : opt text;
+  gasUsed : nat;
+};
+type TransactionRequest = record {
+  to : opt text;
+  gas : opt nat;
+  maxFeePerGas : opt nat;
+  gasPrice : opt nat;
+  value : opt nat;
+  maxFeePerBlobGas : opt nat;
+  from : opt text;
+  "type" : opt text;
+  accessList : opt vec AccessListEntry;
+  nonce : opt nat;
+  maxPriorityFeePerGas : opt nat;
+  blobs : opt vec text;
+  input : opt text;
+  chainId : opt nat;
+  blobVersionedHashes : opt vec text;
+};
+type ValidationError = variant { Custom : text; InvalidHex : text };
+service : (InstallArgs) -> {
+  eth_call : (RpcServices, opt RpcConfig, CallArgs) -> (MultiCallResult);
+  eth_feeHistory : (RpcServices, opt RpcConfig, FeeHistoryArgs) -> (
+      MultiFeeHistoryResult,
+    );
+  eth_getBlockByNumber : (RpcServices, opt RpcConfig, BlockTag) -> (
+      MultiGetBlockByNumberResult,
+    );
+  eth_getLogs : (RpcServices, opt RpcConfig, GetLogsArgs) -> (
+      MultiGetLogsResult,
+    );
+  eth_getTransactionCount : (
+      RpcServices,
+      opt RpcConfig,
+      GetTransactionCountArgs,
+    ) -> (MultiGetTransactionCountResult);
+  eth_getTransactionReceipt : (RpcServices, opt RpcConfig, text) -> (
+      MultiGetTransactionReceiptResult,
+    );
+  eth_sendRawTransaction : (RpcServices, opt RpcConfig, text) -> (
+      MultiSendRawTransactionResult,
+    );
+  getMetrics : () -> (Metrics) query;
+  getNodesInSubnet : () -> (nat32) query;
+  getProviders : () -> (vec Provider) query;
+  getServiceProviderMap : () -> (vec record { RpcService; ProviderId }) query;
+  request : (RpcService, text, nat64) -> (RequestResult);
+  requestCost : (RpcService, text, nat64) -> (RequestCostResult) query;
+  updateApiKeys : (vec record { ProviderId; opt text }) -> ();
+}
