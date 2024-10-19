@@ -5,7 +5,7 @@ async function main() {
     // "contracts/examples/SimpleBlog"
     // "contracts/examples/Blog.sol:Blog"
     // "contracts/examples/SimpleW3box.sol:SimpleW3box"
-    "contracts/DecentralizedWebsiteBuilder.sol:DecentralizedWebsiteBuilder"
+    "contracts/CypherpunkCMS.sol:CypherpunkCMS" //DecentralizedWebsiteBuilder.sol:DecentralizedWebsiteBuilder"
   );
   //   const SimpleFlatDirectory = await hre.ethers.getContractFactory(
   //     "SimpleFlatDirectory"

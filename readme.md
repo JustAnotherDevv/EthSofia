@@ -4,6 +4,13 @@
 
 Cypherpunk CMS is a decentralized content management system created during EthSofia. The platform stores website components and content in smart contracts using ETHStorage and the **Web3://** standard (ERC-4804).
 
+## Smart contracts
+
+Deployed to Base Sepolia:
+
+- `0x7a394022193f9Bab8A6660dF4c418C0b5a6aA315`
+- `0x0f0B7aF98240387CF3eA33097A5F19509AE6D584`
+
 ## Table of Contents
 
 - [Features](#features)
